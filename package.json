@@ -1,0 +1,31 @@
+{
+  "name": "cesnet-whoami",
+  "version": "0.0.1",
+  "description": "CESNET's login page",
+  "scripts": {
+    "dev": "npx mix",
+    "watch": "npx mix watch",
+    "prod": "npx mix --production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JanOppolzer/cesnet-whoami.git"
+  },
+  "keywords": [
+    "cesnet",
+    "whoami"
+  ],
+  "author": "Jan Oppolzer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JanOppolzer/cesnet-whoami/issues"
+  },
+  "homepage": "https://github.com/JanOppolzer/cesnet-whoami#readme",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.4.0",
+    "autoprefixer": "^10.4.1",
+    "laravel-mix": "^6.0.39",
+    "postcss": "^8.4.5",
+    "tailwindcss": "^3.0.11"
+  }
+}
