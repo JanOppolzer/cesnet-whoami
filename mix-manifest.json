@@ -2,8 +2,12 @@
     "/dist/css/app.css": "/dist/css/app.css",
     "/dist/error.html": "/dist/error.html",
     "/dist/index.html": "/dist/index.html",
-    "/dist/login-error.html": "/dist/login-error.html",
     "/dist/login.html": "/dist/login.html",
-    "/dist/img/cesnet-logo-negativ.svg": "/dist/img/cesnet-logo-negativ.svg",
-    "/dist/img/cesnet-logo.svg": "/dist/img/cesnet-logo.svg"
+    "/dist/intercept/attribute-release.html": "/dist/intercept/attribute-release.html",
+    "/dist/webauthn/webauthn-authn.html": "/dist/webauthn/webauthn-authn.html",
+    "/dist/webauthn/webauthn-end.html": "/dist/webauthn/webauthn-end.html",
+    "/dist/webauthn/webauthn-register-username.html": "/dist/webauthn/webauthn-register-username.html",
+    "/dist/webauthn/webauthn-register.html": "/dist/webauthn/webauthn-register.html",
+    "/dist/idp/images/cesnet-dark.svg": "/dist/idp/images/cesnet-dark.svg",
+    "/dist/idp/images/cesnet-light.svg": "/dist/idp/images/cesnet-light.svg"
 }

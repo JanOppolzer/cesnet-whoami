@@ -1,0 +1,66 @@
+##
+## Velocity Template for displaying the WebAuthn end state view
+##
+## Velocity context will contain the following properties
+## flowExecutionUrl - the form action location
+## flowRequestContext - the Spring Web Flow RequestContext
+## flowExecutionKey - the SWF execution key (this is built into the flowExecutionUrl)
+## profileRequestContext - root of context tree
+## authenticationContext - context with authentication request information
+## webauthnContext = web authentication context
+## rpUIContext - the context with SP UI information from the metadata
+## encoder - HTMLEncoder class
+## webAuthnEncoder - WebAuthnEncoder class
+## request - HttpServletRequest
+## response - HttpServletResponse
+## environment - Spring Environment object for property resolution
+## custom - arbitrary object injected by deployer
+##
+#set ($debug = $environment.getProperty("idp.authn.webauthn.ui.debug", "false"))
+#set ($rpContext = $profileRequestContext.getSubcontext('net.shibboleth.profile.context.RelyingPartyContext'))
+
+## Add CSP directives
+$response.addHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; img-src 'self';")
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#springMessageText("idp.title", "Web Login Service")</title>
+  <link rel="stylesheet" href="$request.getContextPath()/css/app.css" />
+</head>
+
+<body class="sm:p-8 dark:sm:bg-gray-900 dark:bg-gray-800 sm:bg-gray-100 antialiased text-gray-700">
+  <div class="max-w-screen-md mx-auto">
+    <main class="sm:rounded-xl dark:bg-gray-800 dark:shadow-lightgrey dark:shadow-none sm:dark:shadow sm:border sm:shadow-md bg-white">
+
+      <header class="sm:py-8 pb-4 border-b">
+        <div class="flex items-center justify-center">
+          <img class="h-28 dark:hidden" src="/idp/images/cesnet-light.svg" alt="CESNET logo">
+          <img class="h-28 dark:inline-block hidden" src="/idp/images/cesnet-dark.svg" alt="CESNET logo">
+        </div>
+      </header>
+
+      <section class="gap-y-8 sm:px-16 sm:py-8 text-darkgrey flex flex-col px-8 py-4">
+
+        <h1 class="sm:text-2xl text-darkgrey dark:text-white pb-8 text-xl font-bold text-center">
+          #springMessageText("idp.webauthn.ended", "Your session has ended")
+        </h1>
+
+      </section>
+
+      <footer class="p-2">
+        <p class="text-lightgrey text-center">
+          <small>
+            &copy; 1996&mdash;2024
+            <a target="_blank" class="hover:no-underline underline" href="https://www.cesnet.cz">CESNET</a>
+          </small>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+</body>
+
+</html>

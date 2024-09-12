@@ -1,0 +1,126 @@
+##
+## Velocity Template for collection of username for WebAuthn Passwordless use
+##
+## Velocity context will contain the following properties
+## flowExecutionUrl - the form action location
+## flowRequestContext - the Spring Web Flow RequestContext
+## flowExecutionKey - the SWF execution key (this is built into the flowExecutionUrl)
+## profileRequestContext - root of context tree
+## authenticationContext - context with authentication request information
+## webauthnContext - context for WebAuthn authentication
+## rpUIContext - the context with SP UI information from the metadata
+## encoder - HTMLEncoder class
+## cspDigester - Calculates base64-encoded SHA-2 hashes (call apply)
+## cspNonce - Calculates secure nonces (call generateIdentifier)
+## request - HttpServletRequest
+## response - HttpServletResponse
+## environment - Spring Environment object for property resolution
+## custom - arbitrary object injected by deployer
+##
+#set ($rpContext = $profileRequestContext.getSubcontext('net.shibboleth.profile.context.RelyingPartyContext'))
+#set ($eventCtx = $profileRequestContext.getSubcontext('org.opensaml.profile.context.EventContext'))
+#if ($eventCtx)
+#set ($eventId = $eventCtx.getEvent())
+#end
+
+## Add CSP directives
+$response.addHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; img-src 'self';")
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#springMessageText("idp.title", "Web Login Service")</title>
+  <link rel="stylesheet" href="$request.getContextPath()/css/app.css" />
+</head>
+
+<body class="sm:p-8 dark:sm:bg-gray-900 dark:bg-gray-800 sm:bg-gray-100 antialiased text-gray-700">
+  <div class="max-w-screen-md mx-auto">
+    <main class="sm:rounded-xl dark:bg-gray-800 dark:shadow-lightgrey dark:shadow-none sm:dark:shadow sm:border sm:shadow-md bg-white">
+
+      <header class="sm:py-8 pb-4 border-b">
+        <div class="flex items-center justify-center">
+          <img class="h-28 dark:hidden" src="/idp/images/cesnet-light.svg" alt="CESNET logo">
+          <img class="h-28 dark:inline-block hidden" src="/idp/images/cesnet-dark.svg" alt="CESNET logo">
+        </div>
+      </header>
+
+      <section class="gap-y-8 sm:px-16 sm:py-8 text-darkgrey flex flex-col px-8 py-4">
+
+        <form name="username-entry" action="$flowExecutionUrl" method="post">
+          #parse("csrf/csrf.vm")
+
+            #set ($errorMessage = $errorMessageFunction.apply($profileRequestContext))
+            #if ($errorMessage)
+                <p class="border-cesnetred dark:text-gray-100 bg-cesnetred/20 shadow-cesnetred/20 text-darkgrey px-4 py-2 mb-2 border rounded-lg shadow">$encoder.encodeForHTML($errorMessage)</p>
+            #end
+
+            <div class="pb-4">
+                <label class="dark:text-gray-100 font-bold" for="j_username">#springMessageText("idp.login.username", "Username")</label>
+                <input class="focus:border-freshblue dark:border-white dark:bg-transparent dark:text-gray-100 dark:placeholder:text-gray-100 w-full rounded-lg" id="username" name="j_username" type="text" placeholder="Enter your username here" value="#if($username)$encoder.encodeForHTML($username)#end" required>
+            </div>
+
+            <div class="pb-4">
+                <label class="dark:text-gray-100 font-bold" for="password">#springMessageText("idp.login.password", "Password")</label>
+                <input class="focus:border-freshblue dark:border-white dark:bg-transparent dark:text-gray-100 dark:placeholder:text-gray-100 w-full rounded-lg" id="password" name="j_password" type="password" placeholder="Enter your password here" value="" required>
+            </div>
+
+            <div class="">
+                <label>
+                    <input class="dark:bg-inherit rounded" type="checkbox" id="donotcache" name="donotcache">
+                    <span class="dark:text-gray-400">#springMessageText("idp.login.donotcache", "Don't Remember Login")</span>
+                </label>
+            </div>
+
+            <div class="pb-4">
+                <label>
+                    <input class="dark:bg-inherit rounded" id="_shib_idp_revokeConsent" name="_shib_idp_revokeConsent" type="checkbox">
+                    <span class="dark:text-gray-400">#springMessageText("idp.attribute-release.revoke", "Clear prior granting of permission for release of your information to this service.")</span>
+                </label>
+            </div>
+
+            <button class="bg-cesnetblue shadow-cesnetblue/60 hover:shadow-cesnetblue/40 hover:opacity-90 px-20 py-4 font-bold text-white rounded-lg shadow-md" type="submit" name="_eventId_proceed" onClick="$onClick">
+                #springMessageText("idp.login.login", "Login")
+            </button>
+
+        </form>
+
+        <ul class="list-square marker:text-cesnetblue list-inside">
+          <li>
+            <a target="_blank" class="text-cesnetblue dark:text-freshblue hover:underline" href="#springMessageText("idp.url.password.reset", '#')">#springMessageText("idp.login.forgotPassword", "Forgot your password?")</a>
+          </li>
+          <li>
+            <a target="_blank" class="text-cesnetblue dark:text-freshblue hover:underline" href="#springMessageText("idp.url.helpdesk", '#')">#springMessageText("idp.login.needHelp", "Need Help?")</a>
+          </li>
+        </ul>
+
+      </section>
+
+      <footer class="p-2">
+        <p class="text-lightgrey text-center">
+          <small>
+            &copy; 1996&mdash;2024
+            <a target="_blank" class="hover:no-underline underline" href="https://www.cesnet.cz">CESNET</a>
+          </small>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+  <script #if ($nonce)nonce="$nonce"#end>
+  <!--
+  const ufield = document.getElementById('username');
+  const pfield = document.getElementById('password');
+  if (ufield.value.trim().length == 0) {
+    ufield.focus();
+  } else {
+    pfield.focus();
+  }
+  // -->
+  </script>
+
+</body>
+
+</html>

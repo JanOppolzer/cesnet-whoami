@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+
+<body class="sm:p-8 dark:sm:bg-gray-900 dark:bg-gray-800 sm:bg-gray-100 antialiased text-gray-700">
+  <div class="max-w-screen-md mx-auto">
+    <main class="sm:rounded-xl dark:bg-gray-800 dark:shadow-lightgrey dark:shadow-none sm:dark:shadow sm:border sm:shadow-md bg-white">
+
+      <header class="sm:py-8 pb-4 border-b">
+        <div class="flex items-center justify-center">
+          <img class="h-28 dark:hidden" src="/idp/images/cesnet-light.svg" alt="CESNET logo">
+          <img class="h-28 dark:inline-block hidden" src="/idp/images/cesnet-dark.svg" alt="CESNET logo">
+        </div>
+      </header>
+
+      <section class="sm:px-16 sm:py-8 text-darkgrey dark:text-lightgrey px-8 py-4">
+
+        <h1 class="sm:text-2xl text-darkgrey dark:text-white pb-4 text-xl font-bold">Information Release</h1>
+
+        <p class="pb-4">You are about to access the service:<br>
+        <strong>REFEDS MFA testing service</strong> of CESNET</p>
+
+        <p class="pb-4">Description as provided by this service:<br>
+        <strong>A service to test REFEDS MFA support at Identity Providers within eduID.cz.</strong></p>
+
+        <ul class="list-square marker:text-cesnetblue pb-8 list-inside">
+            <li>
+                <a class="text-cesnetblue dark:text-freshblue hover:underline" href="#">Additional information about the service</a>
+            </li>
+        </ul>
+
+        <section class="p-4 border rounded-lg shadow-xl">
+
+            <h2 class="sm:text-xl text-darkgrey dark:text-lightgrey text-lg font-bold">Information to be Provided to Service</h2>
+
+            <dl>
+
+                <dt class="pt-4">Given name</dt>
+                <dd><strong>Jan</strong></dd>
+
+                <dt class="pt-4">Surname</dt>
+                <dd><strong>Oppolzer</strong></dd>
+
+                <dt class="pt-4">Display name</dt>
+                <dd><strong>Jan Oppolzer</strong></dd>
+
+                <dt class="pt-4">Common name</dt>
+                <dd><strong>Jan Oppolzer</strong></dd>
+
+                <dt class="pt-4">Common name without diacritics</dt>
+                <dd><strong>Jan Oppolzer</strong></dd>
+
+                <dt class="pt-4">Business phone number</dt>
+                <dd><strong>+420 234 680 257</strong></dd>
+
+                <dt class="pt-4">E-mail</dt>
+                <dd><strong>jan.oppolzer@cesnet.cz</strong></dd>
+
+                <dt class="pt-4">Authorized e-mail</dt>
+                <dd>
+                    <strong>jop@cesnet.cz</strong><br>
+                    <strong>jan.oppolzer@cesnet.cz</strong>
+                </dd>
+
+                <dt class="pt-4">Principal name</dt>
+                <dd><strong>jop@cesnet.cz</strong></dd>
+
+                <dt class="pt-4">Unique persistent ID</dt>
+                <dd><strong>1747</strong></dd>
+
+                <dt class="pt-4">Unique ID</dt>
+                <dd><strong>1747@cesnet.cz</strong></dd>
+
+                <dt class="pt-4">Organization name</dt>
+                <dd><strong>CESNET, z. s. p. o.</strong></dd>
+
+                <dt class="pt-4">Organizational unit</dt>
+                <dd><strong>Oddělení federovaných identit</strong></dd>
+
+                <dt class="pt-4">Home Organization</dt>
+                <dd><strong>cesnet</strong>.cz</dd>
+
+                <dt class="pt-4">Scoped affiliation</dt>
+                <dd>
+                    <div><strong>member@cesnet.cz</strong></div>
+                    <div><strong>employee@cesnet.cz</strong></div>
+                </dd>
+            
+            </dl>
+
+        </section>
+
+        <p class="py-6">The information above would be shared with the service if you proceed.</p>
+
+        <fieldset class="flex flex-col gap-4">
+
+            <div>
+                <legend>
+                    <h2 class="sm:text-xl text-darkgrey dark:text-white text-lg font-bold">Select an information release consent duration:</h2>
+                </legend>
+            </div>
+
+            <div>
+                <input id="_shib_idp_doNotRememberConsent" type="radio" name="_shib_idp_consentOptions" value="_shib_idp_doNotRememberConsent">
+                <label for="_shib_idp_doNotRememberConsent">Ask me again at next login</label>
+                <p><small>I agree to send my information this time.</small></p>
+            </div>
+
+            <div>
+                <input id="_shib_idp_rememberConsent" type="radio" name="_shib_idp_consentOptions" value="_shib_idp_rememberConsent" checked>
+                <label for="_shib_idp_rememberConsent">Ask me again if information changes</label>
+                <p><small>I agree that the same information will be sent automatically to this service in the future.</small></p>
+            </div>
+
+        </fieldset>
+
+        <div class="sm:flex-row flex flex-col items-center justify-center gap-4 py-8">
+            <button class="grow bg-cesnetblue shadow-cesnetblue/60 hover:shadow-cesnetblue/40 hover:opacity-90 sm:w-56 w-full px-20 py-4 font-bold text-white rounded-lg shadow-md" type="submit">Accept</button>
+            <button class="grow bg-cesnetred shadow-cesnetred/60 hover:shadow-cesnetred/40 hover:opacity-90 sm:w-56 w-full px-20 py-4 font-bold text-white rounded-lg shadow-md" type="submit">Reject</button>
+        </div>
+
+        <p>This setting can be revoked at any time with the checkbox on the login page.</p>
+
+      </section>
+
+      <footer class="p-2">
+        <p class="text-lightgrey text-center">
+          <small>
+            &copy; 1996&mdash;2024
+            <a target="_blank" class="hover:no-underline underline" href="https://www.cesnet.cz">CESNET</a>
+          </small>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+</body>
+
+</html>

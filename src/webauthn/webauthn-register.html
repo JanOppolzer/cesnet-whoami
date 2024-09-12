@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+
+<body class="sm:p-8 dark:sm:bg-gray-900 dark:bg-gray-800 sm:bg-gray-100 antialiased text-gray-700">
+  <div class="max-w-screen-md mx-auto">
+    <main class="sm:rounded-xl dark:bg-gray-800 dark:shadow-lightgrey dark:shadow-none sm:dark:shadow sm:border sm:shadow-md bg-white">
+
+      <header class="sm:py-8 pb-4 border-b">
+        <div class="flex items-center justify-center">
+          <img class="h-28 dark:hidden" src="/idp/images/cesnet-light.svg" alt="CESNET logo">
+          <img class="h-28 dark:inline-block hidden" src="/idp/images/cesnet-dark.svg" alt="CESNET logo">
+        </div>
+      </header>
+
+      <section class="gap-y-8 sm:px-16 sm:py-8 text-darkgrey px-8 py-4">
+
+        <p id="reg-success-outcome" class="dark:text-gray-100 bg-green-400/20 shadow-green-400/20 text-darkgrey px-4 py-2 mb-2 text-green-700 border border-green-400 rounded-lg shadow">Key was registered successfully</p>
+
+        <p id="reg-error-outcome" class="border-cesnetred dark:text-gray-100 bg-cesnetred/20 shadow-cesnetred/20 text-darkgrey px-4 py-2 mb-2 border rounded-lg shadow">$encoder.encodeForHTML($errorMessage)</p>
+
+        <div id="error_div">
+          <p id="error_message" class="border-cesnetred dark:text-gray-100 bg-cesnetred/20 shadow-cesnetred/20 text-darkgrey px-4 py-2 mb-2 border rounded-lg shadow">The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission.</p>
+        </div>
+
+        <h1 class="sm:text-2xl text-darkgrey dark:text-white pb-8 text-xl font-bold text-center">Registered keys for 'jop'</h1>
+
+        <div class="pb-8">
+          <table class="w-full border-collapse">
+            <tr class="dark:text-white border-b">
+               <th class="p-2 align-top">Key Name</th>
+               <th class="p-2 align-top">Authenticator</th>
+               <th class="p-2 align-top">Transports</th>
+               <th class="p-2 align-top">Passkey?</th>
+               <th class="p-2 align-top">Registration Time</th>
+               <th class="p-2 align-top">Action</th>
+            </tr>
+            <tr class="dark:text-white hover:bg-freshblue/10 border-b">
+               <td class="p-2">Apple</td>
+               <td class="p-2">unknown</td>
+               <td class="p-2">hybrid,internal</td>
+               <td class="p-2">unknown</td>
+               <td class="p-2"><time datetime="2024-08-23T01:58">2024-08-23T01:58</time></td>
+               <td class="p-2">
+                  <form id="delete_key_form" action="$flowExecutionUrl" method="post">
+                     <input type="hidden" name="credentialId" value="$cred.credentialIdBase64Url"/>
+                     <button class="bg-cesnetred/50 hover:bg-cesnetred px-6 py-3 font-bold text-white rounded-lg" onclick="$areYouSure" id="removeButton" type="submit" name="_eventId_deleteKey">Remove</button>
+                  </form>
+               </td>
+            </tr>
+          </table>
+        </div>
+
+        <h1 class="sm:text-2xl text-darkgrey dark:text-white pb-8 text-xl font-bold text-center">You have no registered keys</h1>
+
+        <div class="sm:flex-row flex flex-col items-center justify-center gap-4">
+            <button class="bg-cesnetblue shadow-cesnetblue/60 hover:shadow-cesnetblue/40 hover:opacity-90 px-20 py-4 font-bold text-white rounded-lg shadow-md" type="submit">
+                Add new security key
+            </button>
+
+            <button class="bg-cesnetblue shadow-cesnetblue/60 hover:shadow-cesnetblue/40 hover:opacity-90 px-20 py-4 font-bold text-white rounded-lg shadow-md" type="submit">
+                Finish
+            </button>
+        </div>
+
+      </section>
+
+      <footer class="p-2">
+        <p class="text-lightgrey text-center">
+          <small>
+            &copy; 1996&mdash;2024
+            <a target="_blank" class="hover:no-underline underline" href="https://www.cesnet.cz">CESNET</a>
+          </small>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+</body>
+
+</html>

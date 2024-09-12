@@ -1,0 +1,166 @@
+##
+## Velocity Template for displaying the WebAuthn authentication view
+##
+## Velocity context will contain the following properties
+## flowExecutionUrl - the form action location
+## flowRequestContext - the Spring Web Flow RequestContext
+## flowExecutionKey - the SWF execution key (this is built into the flowExecutionUrl)
+## profileRequestContext - root of context tree
+## authenticationContext - context with authentication request information
+## authenticationErrorContext - context with login error state
+## webauthnContext = web authentication context
+## authenticationWarningContext - context with login warning state
+## rpUIContext - the context with SP UI information from the metadata
+## encoder - HTMLEncoder class
+## webAuthnEncoder - WebAuthnEncoder class
+## request - HttpServletRequest
+## response - HttpServletResponse
+## environment - Spring Environment object for property resolution
+## custom - arbitrary object injected by deployer
+##
+#set ($debug = $environment.getProperty("idp.authn.webauthn.ui.debug", "false"))
+#set ($rpContext = $profileRequestContext.getSubcontext('net.shibboleth.profile.context.RelyingPartyContext'))
+
+## Add CSP directives
+#set ($nonce = $cspNonce.generateIdentifier())
+$response.addHeader("Content-Security-Policy", "default-src 'none'; style-src 'self'; img-src https:; script-src-elem 'nonce-$nonce'")
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#springMessageText("idp.title", "Web Login Service")</title>
+  <script type="text/javascript" src="$request.getContextPath()/js/webauthn/webauthn-support.js" #if ($nonce)nonce="$nonce"#end></script>
+  <link rel="stylesheet" href="$request.getContextPath()/css/app.css" />
+  <script type="module" #if ($nonce)nonce="$nonce"#end>        
+    import {
+        get,
+        parseRequestOptionsFromJSON,
+        supported,
+    } from "$request.getContextPath()/js/webauthn/webauthn-json.browser-ponyfill.min.js";
+
+
+    window.addEventListener("load", () => {
+        try {
+            var isSupported = supported();
+            if (!isSupported) {
+                document.getElementById('supportedDiv').classList.add('hidden')
+                document.getElementById("supportedDiv").disabled = true;
+                document.getElementById("authenticate").disabled = true;
+                document.getElementById("authenticator_assertion_form").disabled = true;
+                document.getElementById("unsupportedDiv").disabled = false;
+                document.getElementById('unsupportedDiv').classList.remove('hidden')
+            } else {
+                document.getElementById("authenticate").onclick = authenticate;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    });
+
+    async function authenticate() {
+        // Some UI changes
+        try {
+            document.getElementById('authenticate').textContent='#springMessageText("idp.webauthn.authn.inprogress", "Authenticating...")'
+        } catch (e) {
+            // No issue if this does not work
+        }
+        var pkCredRequestOptions = $webAuthnEncoder.serializePublicKeyCredentialRequestOptionsAsJSON($webauthnContext.publicKeyCredentialRequestOptions)
+        var parsedRequestOptions = parseRequestOptionsFromJSON(pkCredRequestOptions);
+        await get(parsedRequestOptions)
+            .then(function (pkCredAssertion) {
+                document.getElementById("publicKeyCredential").value = JSON.stringify(pkCredAssertion);
+                document.getElementById("authenticationSubmit").click();
+            }).catch(function (err) {
+                console.error(err);
+                document.getElementById('authenticate').textContent='#springMessageText("idp.webauthn.authn.retry", "Login failed, retry")'
+            });
+    }
+</script>
+</head>
+
+<body class="sm:p-8 dark:sm:bg-gray-900 dark:bg-gray-800 sm:bg-gray-100 antialiased text-gray-700">
+  <div class="max-w-screen-md mx-auto">
+    <main class="sm:rounded-xl dark:bg-gray-800 dark:shadow-lightgrey dark:shadow-none sm:dark:shadow sm:border sm:shadow-md bg-white">
+
+      <header class="sm:py-8 pb-4 border-b">
+        <div class="flex items-center justify-center">
+          <img class="h-28 dark:hidden" src="/idp/images/cesnet-light.svg" alt="CESNET logo">
+          <img class="h-28 dark:inline-block hidden" src="/idp/images/cesnet-dark.svg" alt="CESNET logo">
+        </div>
+        #set ($serviceName = $rpUIContext.serviceName)
+        #if ($serviceName && !$rpContext.getRelyingPartyId().contains($serviceName))
+          <h1 class="sm:text-2xl text-darkgrey dark:text-white text-xl font-bold text-center capitalize">#springMessageText("idp.login.loginTo", "Login to") $encoder.encodeForHTML($serviceName)</h1>
+        #end
+      </header>
+
+      <section class="gap-y-8 sm:px-16 sm:py-8 text-darkgrey flex flex-col px-8 py-4">
+
+        #set ($desc = $rpUIContext.getServiceDescription())
+        #if ($desc)
+            <p class="text-darkgrey dark:text-white">$encoder.encodeForHTML($desc)</p>
+        #end
+
+        <div id="supportedDiv">
+
+          <form id="authenticator_assertion_form" action="$flowExecutionUrl" method="post">
+            #parse("csrf/csrf.vm")
+            <input type="hidden" id="publicKeyCredential" name="publicKeyCredential" />
+            <button class="hidden" id="authenticationSubmit" type="submit" name="_eventId_proceed">
+              #springMessageText("idp.webauthn.authn.submit", "Submit authentication")
+            </button>
+          </form>
+
+          <div class="flex items-center justify-center">
+            <button id="authenticate" class="bg-cesnetblue shadow-cesnetblue/60 hover:shadow-cesnetblue/40 hover:opacity-90 sm:px-20 px-6 py-4 font-bold text-white rounded-lg shadow-md">
+              #springMessageText("idp.webauthn.authn.authenticate", "Login with passkey or security key")
+            </button>
+          </div>
+
+          #if($debug == "true")
+            <hr>
+            <button type="button" class="collapsible-debug">#springMessageText("idp.webauthn.debug.title", "Debugging")</button>    
+            <div class="debug" id="debug-div">
+              <label for="publicKeyCredentialCreation">#springMessageText("idp.webauthn.debug.request", "Request Options")</label>
+              <textarea id="publicKeyCredentialRequestOptions" name="publicKeyCredentialRequestOptions" rows="20" cols="50">
+                $webAuthnEncoder.serializePublicKeyCredentialRequestOptionsAsJSON($webauthnContext.publicKeyCredentialRequestOptions)
+              </textarea>
+            </div>
+          #end
+
+        </div>
+
+        <div id="unsupportedDiv" class="hidden">
+          #springMessageText("idp.webauthn.authn.unsupported", "Your browser is not WebAuthn compatible")
+        </div>
+
+        <ul class="list-square marker:text-cesnetblue list-inside">
+          <li>
+            <a class="text-cesnetblue dark:text-freshblue hover:underline" href="#springMessageText('idp.webauthn.enrollment.url', '/idp/profile/admin/webauthn-registration')">#springMessageText("idp.webauthn.enrollment", "Register new credential")</a>
+          </li>
+          <li>
+            <a target="_blank" class="text-cesnetblue dark:text-freshblue hover:underline" href="#springMessageText('idp.url.helpdesk', '#')">#springMessageText("idp.login.needHelp", "Need Help?")</a>
+          </li>
+          <li>
+            <a target="_blank" class="text-cesnetblue dark:text-freshblue hover:underline" href="https://www.cesnet.cz/personal-data-processing/?lang=en">Personal Data Protection</a>
+          </li>
+        </ul>
+
+      </section>
+
+      <footer class="p-2">
+        <p class="text-lightgrey text-center">
+          <small>
+            &copy; 1996&mdash;2024
+            <a target="_blank" class="hover:no-underline underline" href="https://www.cesnet.cz">CESNET</a>
+          </small>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+</body>
+
+</html>

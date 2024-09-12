@@ -16,19 +16,30 @@
           <img class="h-28 dark:hidden" src="/idp/images/cesnet-light.svg" alt="CESNET logo">
           <img class="h-28 dark:inline-block hidden" src="/idp/images/cesnet-dark.svg" alt="CESNET logo">
         </div>
+        <h1 class="sm:text-2xl text-darkgrey dark:text-white text-xl font-bold text-center capitalize">
+          Login REFEDS MFA testing service
+        </h1>
       </header>
 
       <section class="gap-y-8 sm:px-16 sm:py-8 text-darkgrey flex flex-col px-8 py-4">
 
-        <h1 class="sm:text-2xl text-darkgrey dark:text-lightgrey pb-4 text-xl font-bold">Web Login Service - Stale Request</h1>
+        <p class="text-darkgrey dark:text-white">A service to test REFEDS MFA support at Identity Providers within eduID.cz.</p>
 
-        <p class="dark:text-gray-100 text-darkgrey">You may be seeing this page because you used the Back button while browsing a secure web site or application. Alternatively, you may have mistakenly bookmarked the web login form instead of the actual web site you wanted to bookmark or used a link created by somebody else who made the same mistake.</p>
-
-        <p class="dark:text-gray-100 text-darkgrey">Left unchecked, this can cause errors on some browsers or result in you returning to the web site you tried to leave, so this page is presented instead.</p>
+        <div class="flex items-center justify-center">
+          <button class="bg-cesnetblue shadow-cesnetblue/60 hover:shadow-cesnetblue/40 hover:opacity-90 sm:px-20 px-6 py-4 font-bold text-white rounded-lg shadow-md">
+            Login with passkey or security key
+          </button>
+        </div>
 
         <ul class="list-square marker:text-cesnetblue list-inside">
           <li>
+            <a class="text-cesnetblue dark:text-freshblue hover:underline" href="#">Register New Credential</a>
+          </li>
+          <li>
             <a target="_blank" class="text-cesnetblue dark:text-freshblue hover:underline" href="https://wiki.cesnet.cz">Need Help?</a>
+          </li>
+          <li>
+            <a target="_blank" class="text-cesnetblue dark:text-freshblue hover:underline" href="https://www.cesnet.cz/personal-data-processing/?lang=en">Personal Data Protection</a>
           </li>
         </ul>
 

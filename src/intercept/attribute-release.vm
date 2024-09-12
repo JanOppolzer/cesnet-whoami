@@ -1,0 +1,161 @@
+##
+## Velocity Template for DisplayAttributeReleasePage view-state
+##
+## Velocity context will contain the following properties :
+##
+## attributeReleaseContext - context holding consentable attributes
+## attributeReleaseFlowDescriptor - attribute consent flow descriptor
+## attributeDisplayNameFunction - function to display attribute name
+## attributeDisplayDescriptionFunction - function to display attribute description
+## consentContext - context representing the state of a consent flow
+## encoder - HTMLEncoder class
+## cspDigester - Calculates base64-encoded SHA-2 hashes (call apply)
+## cspNonce - Calculates secure nonces (call generateIdentifier)
+## flowExecutionKey - SWF execution key (this is built into the flowExecutionUrl)
+## flowExecutionUrl - form action location
+## flowRequestContext - Spring Web Flow RequestContext
+## profileRequestContext - OpenSAML profile request context
+## request - HttpServletRequest
+## response - HttpServletResponse
+## rpUIContext - context with SP UI information from the metadata
+## environment - Spring Environment object for property resolution
+#set ($serviceName = $rpUIContext.serviceName)
+#set ($serviceDescription = $rpUIContext.serviceDescription)
+#set ($informationURL = $rpUIContext.informationURL)
+#set ($privacyStatementURL = $rpUIContext.privacyStatementURL)
+#set ($rpOrganizationLogo = $rpUIContext.getLogo())
+#set ($rpOrganizationName = $rpUIContext.organizationDisplayName)
+#set ($replaceDollarWithNewline = true)
+##
+$response.addHeader("Content-Security-Policy", "script-src 'none'")
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#springMessageText("idp.attribute-release.title", "Information Release")</title>
+  <link rel="stylesheet" href="$request.getContextPath()/css/app.css" />
+</head>
+
+<body class="sm:p-8 dark:sm:bg-gray-900 dark:bg-gray-800 sm:bg-gray-100 antialiased text-gray-700">
+  <div class="max-w-screen-md mx-auto">
+    <main class="sm:rounded-xl dark:bg-gray-800 dark:shadow-lightgrey dark:shadow-none sm:dark:shadow sm:border sm:shadow-md bg-white">
+
+      <header class="sm:py-8 pb-4 border-b">
+        <div class="flex items-center justify-center">
+          <img class="h-28 dark:hidden" src="/idp/images/cesnet-light.svg" alt="CESNET logo">
+          <img class="h-28 dark:inline-block hidden" src="/idp/images/cesnet-dark.svg" alt="CESNET logo">
+        </div>
+      </header>
+
+      <section class="sm:px-16 sm:py-8 text-darkgrey dark:text-lightgrey px-8 py-4">
+
+        <h1 class="sm:text-2xl text-darkgrey dark:text-white pb-4 text-xl font-bold">#springMessageText("idp.attribute-release.title", "Information Release")</h1>
+
+        #if ($serviceName)
+          <p class="pb-4">
+              #springMessageText("idp.attribute-release.serviceNameLabel", "You are about to access the service:")<br>
+              <strong>$encoder.encodeForHTML($serviceName)</strong>
+              #if ($rpOrganizationName)
+                  #springMessageText("idp.attribute-release.of", "of") $encoder.encodeForHTML($rpOrganizationName)
+              #end
+          </p>
+        #end
+
+        #if ($serviceDescription)
+            <p class="pb-4">
+                #springMessageText("idp.attribute-release.serviceDescriptionLabel", "Description as provided by this service:")<br>
+                <strong>$encoder.encodeForHTML($serviceDescription)</strong>
+            </p>
+        #end
+
+        <ul class="list-square marker:text-cesnetblue pb-8 list-inside">
+        #if ($informationURL)
+            <li>
+                <a class="text-cesnetblue dark:text-freshblue hover:underline" href="$informationURL" target="_blank">#springMessageText("idp.attribute-release.informationURLLabel", "Additional information about the service")</a>
+            </li>
+        #end
+        
+        #if ($privacyStatementURL)
+            <li>
+                <a class="text-cesnetblue dark:text-freshblue hover:underline" href="$privacyStatementURL" target="_blank">#springMessageText("idp.attribute-release.privacyStatementURLLabel", "Data privacy information of the service")</a>
+            </li>
+        #end
+        </ul>
+
+        <form action="$flowExecutionUrl" method="post">
+          #parse("csrf/csrf.vm")
+
+          <section class="p-4 border rounded-lg shadow-xl">
+
+              <h2 class="sm:text-xl text-darkgrey dark:text-lightgrey text-lg font-bold">#springMessageText("idp.attribute-release.attributesHeader", "Information to be Provided to Service")</h2>
+
+              <dl>
+
+                  #foreach ($attribute in $attributeReleaseContext.getConsentableAttributes().values())
+
+                      <dt class="pt-4">$encoder.encodeForHTML($attributeDisplayNameFunction.apply($attribute))</dt>
+                      <dd>
+                          #foreach ($value in $attribute.values)
+                              #set ($encodedValue = $encoder.encodeForHTML($value.getDisplayValue()))
+                              <div><strong>$encodedValue</strong></div>
+                              <input id="$attribute.id" type="hidden" name="_shib_idp_consentIds" value="$encoder.encodeForHTML($attribute.id)" checked>
+                          #end
+                      </dd>
+
+                  #end
+              
+              </dl>
+
+          </section>
+
+          <p class="py-6">#springMessageText("idp.attribute-release.confirmationQuestion", "The information above would be shared with the service if you proceed. Do you agree to release this information to the service every time you access it?")</p>
+
+          <fieldset class="flex flex-col gap-4">
+
+              <div>
+                  <legend>
+                      <h2 class="sm:text-xl text-darkgrey dark:text-white text-lg font-bold">#springMessageText("idp.attribute-release.consentMethod", "Select an information release consent duration:")</h2>
+                  </legend>
+              </div>
+
+              <div>
+                  <input id="_shib_idp_doNotRememberConsent" type="radio" name="_shib_idp_consentOptions" value="_shib_idp_doNotRememberConsent">
+                  <label for="_shib_idp_doNotRememberConsent">#springMessageText("idp.attribute-release.doNotRememberConsent", "Ask me again at next login")</label>
+                  <p><small>#springMessageText("idp.attribute-release.doNotRememberConsentItem", "I agree to send my information this time.")</small></p>
+              </div>
+
+              <div>
+                  <input id="_shib_idp_rememberConsent" type="radio" name="_shib_idp_consentOptions" value="_shib_idp_rememberConsent" checked>
+                  <label for="_shib_idp_rememberConsent">#springMessageText("idp.attribute-release.rememberConsent", "Ask me again if information changes")</label>
+                  <p><small>#springMessageText("idp.attribute-release.rememberConsentItem", "I agree that the same information will be sent automatically to this service in the future.")</small></p>
+              </div>
+
+          </fieldset>
+
+          <div class="sm:flex-row flex flex-col items-center justify-center gap-4 py-8">
+              <button class="grow bg-cesnetblue shadow-cesnetblue/60 hover:shadow-cesnetblue/40 hover:opacity-90 sm:w-56 w-full px-20 py-4 font-bold text-white rounded-lg shadow-md" type="submit" name="_eventId_proceed">#springMessageText("idp.attribute-release.accept", "Accept")</button>
+              <button class="grow bg-cesnetred shadow-cesnetred/60 hover:shadow-cesnetred/40 hover:opacity-90 sm:w-56 w-full px-20 py-4 font-bold text-white rounded-lg shadow-md" type="submit" name="_eventId_AttributeReleaseRejected">#springMessageText("idp.attribute-release.reject", "Reject")</button>
+          </div>
+
+        </form>
+
+        <p>#springMessageText("idp.attribute-release.consentMethodRevoke", "This setting can be revoked at any time with the checkbox on the login page.")</p>
+
+      </section>
+
+      <footer class="p-2">
+        <p class="text-lightgrey text-center">
+          <small>
+            &copy; 1996&mdash;2024
+            <a target="_blank" class="hover:no-underline underline" href="https://www.cesnet.cz">CESNET</a>
+          </small>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+</body>
+
+</html>
